@@ -11,6 +11,7 @@ import Funding from './pages/SME/Funding'
 import Coaching from './pages/SME/Coaching'
 import CoachLebo from './pages/SME/CoachLebo'
 import Reporting from './pages/SME/Reporting'
+import TopNav from './components/TopNav'
 import { 
   RouterProvider, 
   Route, 

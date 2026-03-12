@@ -1,3 +1,4 @@
+import TopNav from "./TopNav";
 import { NavLink, Outlet } from "react-router-dom";
 import { useState } from "react";
 import {
@@ -30,44 +31,59 @@ export default function SideNav() {
     { to: "/settings", label: "Settings", icon: Settings },
   ];
 
-  const linkElements = navItems.map(link => (
-    <NavLink
+  const linkElements = navItems.map(link => {
+    const Icon = link.icon;
+    return (
+      <NavLink
         to={link.to}
         key={link.to}
-    >
-        <div className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin">
-            {link.label}
-        </div>
-        
-    </NavLink>
-  ))
+        className={({ isActive }) =>
+          `flex items-center p-3 text-gray-700 hover:bg-gray-100 transition-colors ${
+            isActive ? 'bg-blue-600 text-white rounded-lg mx-2' : ''
+          }`
+        }
+      >
+        <Icon className="w-5 h-5 shrink-0" />
+        {!isCollapsed && (
+          <>
+            <span className="ml-3 text-sm font-medium whitespace-nowrap">{link.label}</span>
+            {link.badge && (
+              <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                {link.badge}
+              </span>
+            )}
+          </>
+        )}
+      </NavLink>
+    );
+  })
 
   return (
-    <div className="flex h-full w-full">
-        <div className={
-            `${isCollapsed ? "w-20" : "w-64"} bg-white border-r border-gray-200
-            h-full flex flex-col transition-all duration-300 z-30 
-            shadow-[4px_0_24px_-12px_rgb(0,0,0,0.1)]`
-            }
-        >
+    <div className="flex flex-col h-screen">
+        <TopNav/>
+        <div className="flex flex-1 overflow-hidden">
             <div className={
-                `h-16 flex items-center ${isCollapsed ? "justify-center" : "px-6"}
-                border-b border-gray-100 transition-all duration-300`
+                `${isCollapsed ? "w-20" : "w-64"} bg-white border-r border-gray-200
+                flex flex-col transition-all duration-300 z-30 
+                shadow-[4px_0_24px_-12px_rgb(0,0,0,0.1)]`
                 }
             >
-                <div className={"w-8 h-8 bg-[#312E81] rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm shrink-0"}>
-                    DP
+                <div className="flex-1 overflow-y-auto">
+                {linkElements}
                 </div>
-                {!isCollapsed && (
-                    <span className="ml-3 text-gray-900 font-semibold text-sm tracking-wide whitespace-nowrap overflow-hidden">
-                        World ESD Hub
-                    </span>
-                )}
+                <div className="border-t border-gray-100 p-3 flex justify-center">
+                <button
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    className="flex items-center gap-2 text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors whitespace-nowrap"
+                >
+                    <ChevronLeft className="w-4 h-4" />
+                    {!isCollapsed && <span className="text-xs font-medium">Collapse</span>}
+                </button>
+                </div>
             </div>
-            {linkElements}
-        </div>
-        <div className="flex-1 overflow-hidden">
-            <Outlet/>
+            <div className="flex-1 overflow-hidden">
+                <Outlet/>
+            </div>
         </div>
     </div>
   )
