@@ -13,7 +13,7 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Bell
+  Bell,
 } from "lucide-react";
 
 
@@ -21,7 +21,7 @@ export default function SideNav() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
-    { to: "/", label: "Dashboard", icon: LayoutDashboard },
+    { to: "/", label: "Dashboard", icon: LayoutDashboard},
     { to: "/diagnosticRoadmap", label: "Diagnostic & Roadmap", icon: ClipboardCheck },
     { to: "/learningHub", label: "Learning Hub", icon: GraduationCap, badge: "3" },
     { to: "/funding", label: "Funding", icon: DollarSign },
@@ -32,59 +32,83 @@ export default function SideNav() {
     { to: "/settings", label: "Settings", icon: Settings },
   ];
 
-  const linkElements = navItems.map(link => {
-    const Icon = link.icon;
-    return (
-      <NavLink
-        to={link.to}
-        key={link.to}
-        className={({ isActive }) =>
-          `flex items-center p-3 text-gray-700 hover:bg-gray-100 transition-colors ${
-            isActive ? 'bg-blue-600 text-white rounded-lg mx-2' : ''
-          }`
-        }
-      >
-        <Icon className="w-5 h-5 shrink-0" />
-        {!isCollapsed && (
-          <>
-            <span className="ml-3 text-sm font-medium whitespace-nowrap">{link.label}</span>
-            {link.badge && (
-              <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {link.badge}
-              </span>
-            )}
-          </>
-        )}
-      </NavLink>
-    );
-  })
-
-  return (
-    <div className="flex flex-col h-screen">
+  return(
+    <div className="flex flex-col h-screen bg-background text-foreground">
         <TopNav/>
+
         <div className="flex flex-1 overflow-hidden">
-            <div className={
-                `${isCollapsed ? "w-20" : "w-64"} bg-white border-r border-gray-200
-                flex flex-col transition-all duration-300 z-30 
-                shadow-[4px_0_24px_-12px_rgb(0,0,0,0.1)]`
+            <aside
+                className={
+                    `${isCollapsed ? "justify-center px-0 py-2.5": "px-3 py-2.5 gap-3"}
+                    border-r border-border bg-card h-full flex flex-col transition-all duration-300` 
                 }
             >
-                <div className="flex-1 overflow-y-auto">
-                {linkElements}
-                </div>
-                <div className="border-t border-gray-100 p-3 flex justify-center">
-                <button
+                <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin">
+                    {navItems.map((item) => {
+                        const Icon = item.icon
+
+                        return(
+                            <NavLink 
+                                key={item.to} 
+                                to={item.to}
+                            >
+                                {({ isActive }) => (
+                                    <div
+                                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-fast
+                                            ${
+                                                isActive 
+                                                ? "bg-primary text-primary-foreground"
+                                                : "text-foreground hover:bg-accent"
+                                            }
+                                        `}
+                                >
+                                    <Icon className="h-5 w-5 shrink-0" />
+
+                                    {!isCollapsed && (
+                                        <>
+                                        <span className="flex-1 text-left">{item.label}</span>
+                                        
+                                        {/* This is for the badge */}
+                                        {/* {item.badge && (
+                                            <Badge
+                                            className="ml-auto"
+                                            variant={isActive ? "secondary" : "default"}
+                                            >
+                                            {item.badge}
+                                            </Badge>
+                                        )} */}
+                                        </>
+                                    )} 
+                                </div>
+                            )}
+                            </NavLink>
+                        )
+                    })}
+                </nav>
+
+                <div className="p-4 border-t">
+                    <button
                     onClick={() => setIsCollapsed(!isCollapsed)}
-                    className="flex items-center gap-2 text-gray-700 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors whitespace-nowrap"
-                >
-                    <ChevronLeft className="w-4 h-4" />
-                    {!isCollapsed && <span className="text-xs font-medium">Collapse</span>}
-                </button>
+                    className={`
+                        w-full flex items-center justify-center py-2 rounded-lg border border-gray-200 
+                        text-gray-500 hover:text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200
+                    `}
+                    >
+                    {isCollapsed ? (
+                        <ChevronRight size={16} />
+                    ) : (
+                        <>
+                        <ChevronLeft size={16} />
+                        <span className="ml-2 text-sm font-medium">Collapse</span>
+                        </>
+                    )}
+                    </button>
                 </div>
-            </div>
-            <div className="flex-1 overflow-hidden">
+            </aside>
+
+            <main className="flex-1 overflow-hidden bg-background">
                 <Outlet/>
-            </div>
+            </main>
         </div>
     </div>
   )
