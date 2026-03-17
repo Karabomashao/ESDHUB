@@ -11,10 +11,14 @@ export function loginUser({ email, password }) {
   });
 }
 
+
+
+
+
 export function isAuthenticated() {
   return localStorage.getItem("isAuth") === "true";
 }
 
 export function logoutUser() {
-  localStorage.removeItem("user")
+  localStorage.removeItem("isAuth")
 }

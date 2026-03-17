@@ -1,4 +1,29 @@
+import { Button } from "./ui/button"
+import { Bell, ChevronDown, Menu } from "lucide-react"
+import {
+    DropdownMenu, 
+    DropdownMenuTrigger, 
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuItem 
+} from "./ui/dropdown-menu"
+
+import { Avatar, AvatarFallback } from "./ui/avatar"
+import { logoutUser } from "@/utils/auth"
+import { useNavigate } from "react-router-dom"
+
 export default function TopNav(){
+
+    const userName = "LeanTechnovations"
+    const navigate = useNavigate()
+
+
+    function logoutButton(){
+        logoutUser()
+        navigate("/login", {replace: true})
+    }
+
     return(
         <>
             <div className="border-b bg-card sticky top-0 z-40">
@@ -20,7 +45,31 @@ export default function TopNav(){
                     </div>        
 
                     <div className="flex items-center gap-2">
-                        
+                        <Button variant="ghost" size="icon" className="relative">
+                            <Bell className="h-5 w-5" />
+                            <span className="absolute top-1 right-1 h-2 w-2 bg-danger-color rounded-full" />
+                        </Button>
+
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="gap-2">
+                                <Avatar className="h-8 w-8">
+                                <AvatarFallback>{userName.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                </Avatar>
+                                <span className="hidden sm:inline">{userName}</span>
+                                <ChevronDown className="h-4 w-4" />
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Profile</DropdownMenuItem>
+                            <DropdownMenuItem>Settings</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={logoutButton}>Log out</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
                     </div>
                 </div>
             </div>
