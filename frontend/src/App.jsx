@@ -37,7 +37,7 @@ function App() {
           <Route path='funding' element={<Funding/>}/>
           <Route path='coaching' element={<Coaching/>}/>
           <Route path='coachLebo' element={<CoachLebo/>}/>\
-          <Route path='Reporting' element={<Reporting/>}/>
+          <Route path='reporting' element={<Reporting/>}/>
         </Route>
       </Route>
     </>
