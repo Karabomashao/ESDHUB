@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://thankful-ground-04f584e0f.4.azurestaticapps.net"
+      "https://thankful-ground-04f584e0f.4.azurestaticapps.net/login"
     ],
     credentials: true,
   })
@@ -69,5 +69,5 @@ app.post("/auth/google", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port: ${PORT}`);
 });
