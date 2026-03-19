@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://thankful-ground-04f584e0f.4.azurestaticapps.net/login"
+      "https://thankful-ground-04f584e0f.4.azurestaticapps.net"
     ],
     credentials: true,
   })
