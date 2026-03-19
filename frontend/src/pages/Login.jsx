@@ -60,7 +60,7 @@ export default function LoginPage() {
             setGoogleLoading(true)
             setGoogleError("")
 
-            const res = await fetch("http://localhost:5000/auth/google", {
+            const res = await fetch("http://localhost:3000/auth/google", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

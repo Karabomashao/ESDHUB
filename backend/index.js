@@ -6,14 +6,17 @@ import { OAuth2Client } from "google-auth-library";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // Create Google OAuth client
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173",
+      "https://thankful-ground-04f584e0f.4.azurestaticapps.net"
+    ],
     credentials: true,
   })
 );
