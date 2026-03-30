@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-import Login, {action as loginAction} from './pages/Login'
+import Login from './pages/Login'
 import SideNavLayout from './components/SideNavLayout'
 import Settings from './pages/SME/Settings'
 import Compliance from './pages/SME/Compliance'
@@ -25,7 +25,7 @@ function App() {
   const router = createBrowserRouter(createRoutesFromElements(
     <>
       {/* public route */}
-      <Route path='/login' element={<Login/>} action={loginAction}/>
+      <Route path='/login' element={<Login/>}/>
 
       <Route element={<ProtectedLayout/>}>
           <Route path="/" element={<SideNavLayout/>}>
@@ -37,7 +37,7 @@ function App() {
           <Route path='funding' element={<Funding/>}/>
           <Route path='coaching' element={<Coaching/>}/>
           <Route path='coachLebo' element={<CoachLebo/>}/>\
-          <Route path='Reporting' element={<Reporting/>}/>
+          <Route path='reporting' element={<Reporting/>}/>
         </Route>
       </Route>
     </>
