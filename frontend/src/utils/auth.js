@@ -16,10 +16,10 @@ export async function isAuthenticated() {
 
 export function loginWithGoogle() {
   window.location.href =
-    `${API_BASE}/auth/signin?callbackUrl=http://localhost:5173/`
+    `${API_BASE}/auth/signin?callbackUrl=https://thankful-ground-04f584e0f.4.azurestaticapps.net/`
 }
 
 export function logoutUser() {
   window.location.href =
-    `${API_BASE}/auth/signout?callbackUrl=http://localhost:5173/login`
+    `${API_BASE}/auth/signout?callbackUrl=https://thankful-ground-04f584e0f.4.azurestaticapps.net/login`
 }
