@@ -1,4 +1,4 @@
-const API_BASE = "https://esdhub-backend-a0atcvdzbddegfac.southafricanorth-01.azurewebsites.net/"
+const API_BASE = "https://esdhub-backend-a0atcvdzbddegfac.southafricanorth-01.azurewebsites.net"
 
 export async function getCurrentUser() {
   const res = await fetch(`${API_BASE}/auth/session`, {
@@ -16,7 +16,7 @@ export async function isAuthenticated() {
 
 export function loginWithGoogle() {
   window.location.href =
-    `${API_BASE}/auth/signin?callbackUrl=https://thankful-ground-04f584e0f.4.azurestaticapps.net/`
+    `${API_BASE}/auth/signin?callbackUrl=https://thankful-ground-04f584e0f.4.azurestaticapps.net`
 }
 
 export function logoutUser() {
