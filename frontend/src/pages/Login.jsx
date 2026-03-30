@@ -42,6 +42,7 @@ export default function LoginPage() {
     async function checkSession() {
       try {
         const user = await getCurrentUser()
+        console.log("Current user:", user)
 
         if (!mounted) return
 
