@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react"
-import { useNavigate, Form, redirect, useActionData, useNavigation, Navigate } from "react-router-dom"
-import { loginUser, isAuthenticated, saveAuth } from "../utils/auth"
+import { useState, useEffect} from "react"
+import { useNavigate, Navigate } from "react-router-dom"
+import { loginWithGoogle, getCurrentUser} from "../utils/auth"
 
 import { 
     Card, 
@@ -15,88 +15,61 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
-//This request is deconstructed to return a request param
-export async function action({ request }) {
-    const formData = await request.formData()
-    const email = formData.get("email")
-    const password = formData.get("password")
+// //This request is deconstructed to return a request param
+// export async function action({ request }) {
+//     const formData = await request.formData()
+//     const email = formData.get("email")
+//     const password = formData.get("password")
 
-    try {
-        await loginUser({ email, password })
-        return redirect("/")
-    } catch (error) {
-        return { error: error.message || "Login failed" }
-    }
-}
+//     try {
+//         await loginUser({ email, password })
+//         return redirect("/")
+//     } catch (error) {
+//         return { error: error.message || "Login failed" }
+//     }
+// }
 
 export default function LoginPage() {
-    const navigation = useNavigation()
+
+    const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
-    const googleButtonRef = useRef(null)
-    const [googleLoading, setGoogleLoading] = useState(false)
-    const [googleError, setGoogleError] = useState("")
 
-    useEffect(() => {
-        if (!window.google || !googleButtonRef.current) return
 
-        window.google.accounts.id.initialize({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            callback: handleGoogleCredentialResponse,
-        })
 
-        googleButtonRef.current.innerHTML = ""
+  useEffect(() => {
+    let mounted = true
 
-        window.google.accounts.id.renderButton(googleButtonRef.current, {
-            theme: "outline",
-            size: "large",
-            text: "signin_with",
-            shape: "rectangular",
-            width: 320,
-        })
-    }, [])
+    async function checkSession() {
+      try {
+        const user = await getCurrentUser()
 
-    async function handleGoogleCredentialResponse(response) {
-        try {
-            setGoogleLoading(true)
-            setGoogleError("")
+        if (!mounted) return
 
-            const res = await fetch("http://localhost:3000/auth/google", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    credential: response.credential,
-                }),
-            })
-
-            const data = await res.json()
-
-            if (!res.ok) {
-                throw new Error(data.error || "Google login failed")
-            }
-
-            // Save whatever auth shape your app uses
-            // Adjust this if your backend returns a token/session differently
-            saveAuth({
-                user: data.user,
-                provider: "google",
-            })
-
-            navigate("/")
-        } catch (error) {
-            setGoogleError(error.message || "Google sign-in failed")
-            console.error("Google sign-in error:", error)
-        } finally {
-            setGoogleLoading(false)
+        if (user) {
+          navigate("/", { replace: true })
+          return
         }
+
+        setLoading(false)
+      } catch (error) {
+        console.error("Session check failed:", error)
+        if (mounted) setLoading(false)
+      }
     }
 
-    if (isAuthenticated()) {
-        return <Navigate to="/" replace />
+    checkSession()
+
+    return () => {
+      mounted = false
     }
+  }, [navigate])
+
+  if (loading) {
+    return <p>Checking session...</p>
+  }
     
     return (
+
         <div className="min-h-screen flex items-center justify-center bg-bg-alt p-4">
             <div className="w-full max-w-md">
                 <div className="flex flex-col items-center mb-8">
@@ -117,7 +90,7 @@ export default function LoginPage() {
                     </CardHeader>
 
                     <CardContent>
-                        <Form method="post" className="space-y-4">
+                        {/* <Form method="post" className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email</Label>
                                 <Input
@@ -154,7 +127,7 @@ export default function LoginPage() {
                             <Button type="submit" className="w-full" disabled={navigation.state === "submitting"}>
                                 {navigation.state === "submitting" ? "Signing in..." : "Sign in"}
                             </Button>
-                        </Form>
+                        </Form> */}
 
                         <div className="mt-6">
                             <Separator className="my-4" />
@@ -164,20 +137,11 @@ export default function LoginPage() {
                             </p>
 
                             <div className="flex justify-center">
-                                <div ref={googleButtonRef} />
+                                {/* <div ref={googleButtonRef} /> */}
+                                <button onClick={loginWithGoogle}>Sign in with Google</button>
+
                             </div>
 
-                            {googleLoading && (
-                                <p className="text-sm text-muted-foreground text-center mt-3">
-                                    Signing in with Google...
-                                </p>
-                            )}
-
-                            {googleError && (
-                                <p className="text-sm text-red-500 text-center mt-3">
-                                    {googleError}
-                                </p>
-                            )}
                         </div>
 
                         <p className="mt-6 text-center text-sm text-muted-foreground">

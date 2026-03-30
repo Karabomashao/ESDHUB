@@ -1,64 +1,25 @@
-// ==============================
-// Email + Password Login
-// ==============================
-export function loginUser({ email, password }) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (email && password) {
-        const user = {
-          email,
-          provider: "local",
-        };
+const API_BASE = "https://esdhub-backend-a0atcvdzbddegfac.southafricanorth-01.azurewebsites.net/"
 
-        localStorage.setItem("isAuth", "true");
-        localStorage.setItem("user", JSON.stringify(user));
+export async function getCurrentUser() {
+  const res = await fetch(`${API_BASE}/auth/session`, {
+    credentials: "include",
+  })
 
-        resolve(user);
-      } else {
-        reject(new Error("Invalid credentials"));
-      }
-    }, 500);
-  });
+  const session = await res.json()
+  return session?.user || null
 }
 
-
-// ==============================
-// Save Google Login
-// ==============================
-export function saveAuth({ user, provider = "google" }) {
-  localStorage.setItem("isAuth", "true");
-
-  localStorage.setItem(
-    "user",
-    JSON.stringify({
-      ...user,
-      provider,
-    })
-  );
+export async function isAuthenticated() {
+  const user = await getCurrentUser()
+  return !!user
 }
 
-
-// ==============================
-// Get Current User
-// ==============================
-export function getCurrentUser() {
-  const rawUser = localStorage.getItem("user");
-  return rawUser ? JSON.parse(rawUser) : null;
+export function loginWithGoogle() {
+  window.location.href =
+    `${API_BASE}/auth/signin?callbackUrl=http://localhost:5173/`
 }
 
-
-// ==============================
-// Check Authentication
-// ==============================
-export function isAuthenticated() {
-  return localStorage.getItem("isAuth") === "true";
-}
-
-
-// ==============================
-// Logout User
-// ==============================
 export function logoutUser() {
-  localStorage.removeItem("isAuth");
-  localStorage.removeItem("user");
+  window.location.href =
+    `${API_BASE}/auth/signout?callbackUrl=http://localhost:5173/login`
 }
