@@ -1,6 +1,5 @@
 import { useState, useEffect} from "react"
-import { useNavigate, Navigate } from "react-router-dom"
-import { loginWithGoogle, getCurrentUser} from "../utils/auth"
+import { useNavigate, Form, redirect, useActionData } from "react-router-dom"
 
 import { 
     Card, 
@@ -13,60 +12,43 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
 
 // //This request is deconstructed to return a request param
-// export async function action({ request }) {
-//     const formData = await request.formData()
-//     const email = formData.get("email")
-//     const password = formData.get("password")
+export async function Action({ request }) {
+    const formData = await request.formData()
+    const username = formData.get('username')
+    const password = formData.get('password')
 
-//     try {
-//         await loginUser({ email, password })
-//         return redirect("/")
-//     } catch (error) {
-//         return { error: error.message || "Login failed" }
-//     }
-// }
+    const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({username, password})
+    })
 
-export default function LoginPage() {
+    const data = await res.json()
+    console.log(data)
 
-    const [loading, setLoading] = useState(true)
-    const navigate = useNavigate()
-
-
-
-  useEffect(() => {
-    let mounted = true
-
-    async function checkSession() {
-      try {
-        const user = await getCurrentUser()
-
-        if (!mounted) return
-
-        if (user) {
-          navigate("/", { replace: true })
-          return
-        }
-
-        setLoading(false)
-      } catch (error) {
-        console.error("Session check failed:", error)
-        if (mounted) setLoading(false)
-      }
+    if(!res.ok){
+        return {error: data || 'Login Failed'}
     }
 
-    checkSession()
+    localStorage.setItem('token', data.token)
+    
+    return redirect('/')
 
-    return () => {
-      mounted = false
+}
+
+export function Login() {
+    const actionData = useActionData()
+
+
+    function handleLogout(){
+        localStorage.removeItem('token')
+        setToken('')
+        setMessage('User logged out')
     }
-  }, [navigate])
-
-  if (loading) {
-    return <p>Checking session...</p>
-  }
     
     return (
 
@@ -90,14 +72,14 @@ export default function LoginPage() {
                     </CardHeader>
 
                     <CardContent>
-                        {/* <Form method="post" className="space-y-4">
+                       <Form method="post" className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
+                                <Label htmlFor="username">Email</Label>
                                 <Input
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    placeholder="you@example.com"
+                                    id="username"
+                                    type="text"
+                                    name="username"
+                                    placeholder="admin"
                                     required
                                 />
                             </div>
@@ -127,27 +109,34 @@ export default function LoginPage() {
                             <Button type="submit" className="w-full" disabled={navigation.state === "submitting"}>
                                 {navigation.state === "submitting" ? "Signing in..." : "Sign in"}
                             </Button>
-                        </Form> */}
+                        </Form>
 
-                        <div className="mt-6">
+                        {/* <div className="mt-6">
                             <Separator className="my-4" />
 
                             <p className="text-center text-sm text-muted-foreground mb-3">
                                 Or continue with
                             </p>
 
-                            <div className="flex justify-center">
+                            <div className="flex justify-center"> */}
                                 {/* <div ref={googleButtonRef} /> */}
-                                <button onClick={loginWithGoogle}>Sign in with Google</button>
+                                {/* <button onClick={loginWithGoogle}>Sign in with Google</button> */}
 
-                            </div>
+                            {/* </div> */}
 
-                        </div>
+                        {/* </div> */}
+
+
+                        {/* {actionData?.error && (
+                            <p style = {{color: 'red'}}>
+                                {actionData.error}
+                            </p>
+                        )} */}
 
                         <p className="mt-6 text-center text-sm text-muted-foreground">
                             Don't have an account?{" "}
                             <Button variant="link" className="p-0 h-auto" type="button">
-                                Request access
+                                Create account
                             </Button>
                         </p>
                     </CardContent>

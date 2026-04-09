@@ -3,10 +3,10 @@ import { isAuthenticated } from "@/utils/auth";
 
 export default function ProtectedLayout(){
 
-    const location = useLocation
     if (!isAuthenticated()){
-        return <Navigate to={"/login"} replace/>
+        return <Navigate to='/login' replace/>
     }
+    // }
 
     return(
             <Outlet/>
