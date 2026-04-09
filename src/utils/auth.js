@@ -19,6 +19,6 @@ export function isAuthenticated() {
 // }
 
 export function logoutUser() {
-  window.location.href =
-    `${API_BASE}/auth/signout?callbackUrl=https://thankful-ground-04f584e0f.4.azurestaticapps.net/login`
+  localStorage.removeItem('token')
+
 }

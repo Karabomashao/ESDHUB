@@ -1,5 +1,4 @@
-import { useState, useEffect} from "react"
-import { useNavigate, Form, redirect, useActionData } from "react-router-dom"
+import { useNavigation, Form, redirect, useActionData } from "react-router-dom"
 
 import { 
     Card, 
@@ -28,13 +27,14 @@ export async function Action({ request }) {
     })
 
     const data = await res.json()
-    console.log(data)
 
     if(!res.ok){
-        return {error: data || 'Login Failed'}
+        return {error: data.error}
     }
 
     localStorage.setItem('token', data.token)
+
+    
     
     return redirect('/')
 
@@ -42,14 +42,12 @@ export async function Action({ request }) {
 
 export function Login() {
     const actionData = useActionData()
+    // const navigation = Navigate.state === 'submitting'
+    const navigation = useNavigation()
+
+    // console.log(actionData.error)
 
 
-    function handleLogout(){
-        localStorage.removeItem('token')
-        setToken('')
-        setMessage('User logged out')
-    }
-    
     return (
 
         <div className="min-h-screen flex items-center justify-center bg-bg-alt p-4">
@@ -111,32 +109,16 @@ export function Login() {
                             </Button>
                         </Form>
 
-                        {/* <div className="mt-6">
-                            <Separator className="my-4" />
-
-                            <p className="text-center text-sm text-muted-foreground mb-3">
-                                Or continue with
-                            </p>
-
-                            <div className="flex justify-center"> */}
-                                {/* <div ref={googleButtonRef} /> */}
-                                {/* <button onClick={loginWithGoogle}>Sign in with Google</button> */}
-
-                            {/* </div> */}
-
-                        {/* </div> */}
-
-
-                        {/* {actionData?.error && (
-                            <p style = {{color: 'red'}}>
+                        {actionData?.error && (
+                            <p className="mt-4 text-sm text-red-500 text-center">
                                 {actionData.error}
                             </p>
-                        )} */}
+                        )}
 
                         <p className="mt-6 text-center text-sm text-muted-foreground">
                             Don't have an account?{" "}
                             <Button variant="link" className="p-0 h-auto" type="button">
-                                Create account
+                                Request account
                             </Button>
                         </p>
                     </CardContent>
