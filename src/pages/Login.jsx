@@ -33,6 +33,8 @@ export async function Action({ request }) {
     }
 
     localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
+
 
     
     
@@ -42,10 +44,8 @@ export async function Action({ request }) {
 
 export function Login() {
     const actionData = useActionData()
-    // const navigation = Navigate.state === 'submitting'
     const navigation = useNavigation()
 
-    // console.log(actionData.error)
 
 
     return (

@@ -36,7 +36,7 @@ export default function SideNav() {
     <div className="flex flex-col h-screen bg-background text-foreground">
         <TopNav/>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 min-h-0">
             <aside
                 className={
                     `${isCollapsed ? "justify-center px-0 py-2.5": "px-3 py-2.5 gap-3"}
@@ -106,7 +106,7 @@ export default function SideNav() {
                 </div>
             </aside>
 
-            <main className="flex-1 overflow-hidden bg-background">
+            <main className="flex-1 min-h-0 overflow-y-auto bg-background">
                 <Outlet/>
             </main>
         </div>
