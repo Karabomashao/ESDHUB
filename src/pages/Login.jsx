@@ -31,15 +31,10 @@ export async function Action({ request }) {
     if(!res.ok){
         return {error: data.error}
     }
-
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
 
-
-    
-    
     return redirect('/')
-
 }
 
 export function Login() {

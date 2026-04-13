@@ -1,4 +1,4 @@
-import { User, Users, Bell, Lock, Link as LinkIcon, Save } from "lucide-react";
+import { Users, Link as LinkIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -23,9 +23,44 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-export default function Settings(){
+import { Form } from "react-router-dom";
 
+
+export async function action({request}){
+    const formData = await request.formData()
+    const firstName = formData.get('firstName')
+    const lastName = formData.get('lastName')
+    const phoneNumber = formData.get('phoneNumber')
+    const token = formData.get('token')
+
+
+
+    const res = await fetch(`http://localhost:3000/api/users/4`,{
+        method: 'PUT',
+        headers: {
+            'Content-Type' : 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({firstName, lastName, phoneNumber})
+    })
+
+    const data = await res.json()
+
+    if(!res.ok){
+        return {error: data.error}
+    }
+}
+
+export function Settings(){
+
+
+    // const user = JSON.parse(localStorage.getItem(user))
+    // const userId = user.id
     const userDetails = JSON.parse(localStorage.getItem('user'))
+    const token = localStorage.getItem('token')
+
+    // console.log(userDetails.id)
+
 
 
     const teamMembers = [
@@ -141,29 +176,56 @@ export default function Settings(){
               <CardDescription>Your account details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="first-name">First Name</Label>
-                  <Input id="first-name" defaultValue={userDetails.firstName} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="last-name">Last Name</Label>
-                  <Input id="last-name" defaultValue={userDetails.lastName} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="personal-email">Email</Label>
-                  <Input id="personal-email" type="email" defaultValue={userDetails.username} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mobile">Mobile Number</Label>
-                  <Input id="mobile" type="tel" defaultValue={userDetails.phoneNumber} />
-                </div>
-              </div>
+                <Form method="put">
 
-              <Button>
-                <Save className="h-4 w-4 mr-2" />
-                Update Personal Info
-              </Button>
+                    <input type="hidden" name="token" value={token}/>
+
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label htmlFor="first-name">First Name</Label>
+                            <Input 
+                                id="first-name" 
+                                defaultValue={userDetails.firstName}
+                                type="text"
+                                name="firstName"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="last-name">Last Name</Label>
+                            <Input 
+                                id="last-name" 
+                                defaultValue={userDetails.lastName}
+                                type="text"
+                                name="lastName" 
+                            />
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <Label htmlFor="personal-email">Email</Label>
+                            <Input 
+                                id="personal-email" 
+                                type="email" 
+                                defaultValue={userDetails.username} 
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="mobile">Mobile Number</Label>
+                            <Input 
+                                id="mobile" 
+                                type="tel" 
+                                defaultValue={userDetails.phoneNumber}
+                                name="phoneNumber" 
+                            />
+                        </div>
+                    </div>
+
+                    <Button>
+                        <Save className="h-4 w-4 mr-2" />
+                        Update Personal Info
+                    </Button>
+                </Form>
             </CardContent>
           </Card>
         </TabsContent>

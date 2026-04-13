@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import {Login, Action as action} from './pages/Login'
 import SideNavLayout from './components/SideNavLayout'
-import Settings from './pages/SME/Settings'
+import {Settings, action as actionSettings} from './pages/SME/Settings'
 import Compliance from './pages/SME/Compliance'
 import Dashboard from './pages/SME/Dashboard'
 import DiagnosticRoadmap from './pages/SME/DiagnosticRoadmap'
@@ -30,7 +30,7 @@ function App() {
       <Route element={<ProtectedLayout/>}>
           <Route path="/" element={<SideNavLayout/>}>
           <Route index element={<Dashboard/>}/>
-          <Route path='settings' element={<Settings/>}/>
+          <Route path='settings' element={<Settings/>} action={actionSettings}/>
           <Route path='compliance' element={<Compliance/>}/>
           <Route path='diagnosticRoadmap' element={<DiagnosticRoadmap/>}/>
           <Route path='learningHub' element={<LearningHub/>}/>
