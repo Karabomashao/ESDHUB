@@ -11,6 +11,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import getDefaultRouteByRole from "@/utils/helperFunctions"
 
 // //This request is deconstructed to return a request param
 export async function Action({ request }) {
@@ -27,21 +28,23 @@ export async function Action({ request }) {
     })
 
     const data = await res.json()
+    console.log(data)
 
     if(!res.ok){
         return {error: data.error}
     }
+
     localStorage.setItem('token', data.token)
     localStorage.setItem('user', JSON.stringify(data.user))
 
-    return redirect('/')
+
+    const targetRoute = getDefaultRouteByRole(data.user.role)
+    return redirect(targetRoute)
 }
 
 export function Login() {
     const actionData = useActionData()
     const navigation = useNavigation()
-
-
 
     return (
 

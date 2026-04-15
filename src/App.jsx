@@ -12,6 +12,15 @@ import Coaching from './pages/SME/Coaching'
 import CoachLebo from './pages/SME/CoachLebo'
 import Reporting from './pages/SME/Reporting'
 import ProtectedLayout from './components/ProtectedLayout'
+
+import AdminLayout from './components/AdminLayout'
+import AdminDashboard from './pages/Admin/AdminDashboard'
+import { SmeManagement, action as smeAction } from './pages/Admin/SmeManagement'
+import FundingPipeline from './pages/Admin/FundingPipeline'
+import Alerts from './pages/Admin/Alerts'
+import Reports from './pages/Admin/Reports'
+import AdminSettings from './pages/Admin/AdminSettings'
+
 import { 
   RouterProvider, 
   Route, 
@@ -27,18 +36,31 @@ function App() {
       {/* public route */}
       <Route path='/login' element={<Login/>} action={action}/>
 
-      <Route element={<ProtectedLayout/>}>
-          <Route path="/" element={<SideNavLayout/>}>
-          <Route index element={<Dashboard/>}/>
-          <Route path='settings' element={<Settings/>} action={actionSettings}/>
-          <Route path='compliance' element={<Compliance/>}/>
-          <Route path='diagnosticRoadmap' element={<DiagnosticRoadmap/>}/>
-          <Route path='learningHub' element={<LearningHub/>}/>
-          <Route path='funding' element={<Funding/>}/>
-          <Route path='coaching' element={<Coaching/>}/>
-          <Route path='coachLebo' element={<CoachLebo/>}/>
-          <Route path='reporting' element={<Reporting/>}/>
-        </Route>
+      {/* SME Routing */}
+      <Route element={<ProtectedLayout allowedRoles={['user']}/>}>
+          <Route path="/sme" element={<SideNavLayout/>}>
+            <Route index element={<Dashboard/>}/>
+            <Route path='settings' element={<Settings/>} action={actionSettings}/>
+            <Route path='compliance' element={<Compliance/>}/>
+            <Route path='diagnosticRoadmap' element={<DiagnosticRoadmap/>}/>
+            <Route path='learningHub' element={<LearningHub/>}/>
+            <Route path='funding' element={<Funding/>}/>
+            <Route path='coaching' element={<Coaching/>}/>
+            <Route path='coachLebo' element={<CoachLebo/>}/>
+            <Route path='reporting' element={<Reporting/>}/>
+          </Route>
+      </Route>
+
+      {/* Admin Routing */}
+      <Route element={<ProtectedLayout allowedRoles={['admin']} />}>
+          <Route path='/admin' element={<AdminLayout/>}>
+            <Route index element={<AdminDashboard />}/>
+            <Route path='sme-management' element={<SmeManagement />} action={smeAction}/>
+            <Route path='funding-pipeline' element={<FundingPipeline />}/>
+            <Route path='alerts' element={<Alerts />}/>
+            <Route path='reports' element={<Reports />}/>
+            <Route path='admin-settings' element={<AdminSettings />}/>
+          </Route>
       </Route>
     </>
   ))

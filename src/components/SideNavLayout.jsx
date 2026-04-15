@@ -21,15 +21,15 @@ export default function SideNav() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
-    { to: "/", label: "Dashboard", icon: LayoutDashboard},
-    { to: "/diagnosticRoadmap", label: "Diagnostic & Roadmap", icon: ClipboardCheck },
-    { to: "/learningHub", label: "Learning Hub", icon: GraduationCap, badge: "3" },
-    { to: "/funding", label: "Funding", icon: DollarSign },
-    { to: "/coaching", label: "Coaching", icon: Users },
-    { to: "/coachLebo", label: "AI Coach Lebo", icon: Sparkles },
-    { to: "/reporting", label: "Reporting", icon: BarChart3 },
-    { to: "/compliance", label: "B-BBEE & Compliance", icon: Shield },
-    { to: "/settings", label: "Settings", icon: Settings },
+    { to: "/sme", label: "Dashboard", icon: LayoutDashboard},
+    { to: "diagnosticRoadmap", label: "Diagnostic & Roadmap", icon: ClipboardCheck },
+    { to: "learningHub", label: "Learning Hub", icon: GraduationCap, badge: "3" },
+    { to: "funding", label: "Funding", icon: DollarSign },
+    { to: "coaching", label: "Coaching", icon: Users },
+    { to: "coachLebo", label: "AI Coach Lebo", icon: Sparkles },
+    { to: "reporting", label: "Reporting", icon: BarChart3 },
+    { to: "compliance", label: "B-BBEE & Compliance", icon: Shield },
+    { to: "settings", label: "Settings", icon: Settings },
   ];
 
   return(
@@ -51,6 +51,7 @@ export default function SideNav() {
                             <NavLink 
                                 key={item.to} 
                                 to={item.to}
+                                end={item.to}
                             >
                                 {({ isActive }) => (
                                     <div

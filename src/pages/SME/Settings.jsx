@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Users, Link as LinkIcon, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,19 +24,24 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-import { Form } from "react-router-dom";
+import { Form, useNavigation } from "react-router-dom";
 
 
 export async function action({request}){
     const formData = await request.formData()
-    const firstName = formData.get('firstName')
-    const lastName = formData.get('lastName')
-    const phoneNumber = formData.get('phoneNumber')
+    const intent = formData.get('intent')
     const token = formData.get('token')
+    const userId = formData.get('userId')
 
 
+    // update personal information
+    if (intent === "updatePersonal"){
 
-    const res = await fetch(`http://localhost:3000/api/users/4`,{
+    const firstName = formData.get("firstName");
+    const lastName = formData.get("lastName");
+    const phoneNumber = formData.get("phoneNumber");  
+
+    const res = await fetch(`http://localhost:3000/api/users/${userId}`,{
         method: 'PUT',
         headers: {
             'Content-Type' : 'application/json',
@@ -48,16 +54,56 @@ export async function action({request}){
 
     if(!res.ok){
         return {error: data.error}
+      }
     }
-}
+
+  if (intent === "updateCompany"){
+
+    const companyName = formData.get("company-name")
+    const industrySector = formData.get("industrySector")
+    const phoneNumber = formData.get("phone")
+    const physicalAddress = formData.get("address")
+    const numberOfEmployees = formData.get("employees")
+    const companyEmail = formData.get("email")
+    
+    const res = await fetch (`http://localhost:3000/api/users/company/${userId}`,
+      {                                     
+        method: "PUT",
+        headers:{
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          companyName,
+          industrySector,
+          phoneNumber,
+          physicalAddress,
+          numberOfEmployees,
+          companyEmail
+        })
+      })
+
+      const data = await res.json()
+
+      if(!res.ok){
+        return {error: data.error}
+      }
+
+      return {error: "Successfuly updated company profile"}
+  }
+
+  
+  }
 
 export function Settings(){
 
 
     // const user = JSON.parse(localStorage.getItem(user))
     // const userId = user.id
+    const [industrySector, setIndustrySector] = useState("technology");
     const userDetails = JSON.parse(localStorage.getItem('user'))
     const token = localStorage.getItem('token')
+    const navigation = useNavigation()
 
     // console.log(userDetails.id)
 
@@ -97,10 +143,10 @@ export function Settings(){
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="team">Team</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          {/* <TabsTrigger value="team">Team</TabsTrigger> */}
+          {/* <TabsTrigger value="notifications">Notifications</TabsTrigger> */}
           <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          {/* <TabsTrigger value="integrations">Integrations</TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
@@ -110,6 +156,11 @@ export function Settings(){
               <CardDescription>Update your company information</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+            <Form method="put">
+              <input type="hidden" name="token" value={token}/>
+              <input type="hidden" name="userId" value={userDetails.id} />
+              <input type="hidden" name="industrySector" value={industrySector} />
+
               <div className="flex items-center gap-4 pb-4 border-b">
                 <Avatar className="h-20 w-20">
                   <AvatarFallback className="text-2xl">TS</AvatarFallback>
@@ -124,15 +175,30 @@ export function Settings(){
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="company-name">Company Name</Label>
-                  <Input id="company-name" defaultValue="TechStart Solutions" />
+                  <Input 
+                    id="company-name" 
+                    name="company-name"
+                    type="text"
+                    defaultValue="TechStart Solutions" 
+                  />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="reg-number">Registration Number</Label>
-                  <Input id="reg-number" defaultValue="2019/123456/07" disabled />
+                  <Input 
+                    id="reg-number"
+                    name="reg-number"
+                    type="text" 
+                    defaultValue="2019/123456/07" 
+                    disabled 
+                  />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="industry">Industry Sector</Label>
-                  <Select defaultValue="technology">
+                  <Select 
+                    value={industrySector} onValueChange={setIndustrySector}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -143,30 +209,55 @@ export function Settings(){
                       <SelectItem value="manufacturing">Manufacturing</SelectItem>
                     </SelectContent>
                   </Select>
+
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="employees">Number of Employees</Label>
-                  <Input id="employees" type="number" defaultValue="45" />
+                  <Input 
+                    id="employees" 
+                    type="number"
+                    name="employees" 
+                    defaultValue="45" 
+                  />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
-                  <Input id="phone" type="tel" defaultValue="+27 11 123 4567" />
+                  <Input 
+                    id="phone" 
+                    type="tel"
+                    name="phone" 
+                    defaultValue="+27 11 123 4567" 
+                  />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Company Email</Label>
-                  <Input id="email" type="email" defaultValue="info@techstart.co.za" />
+                  <Input 
+                    id="email"
+                    name="email" 
+                    type="email" 
+                    defaultValue="info@techstart.co.za" 
+                  />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="address">Physical Address</Label>
-                <Input id="address" defaultValue="123 Innovation Drive, Johannesburg, 2000" />
+                <Input 
+                  id="address"
+                  name="address"
+                  type="text" 
+                  defaultValue="123 Innovation Drive, Johannesburg, 2000" 
+                />
               </div>
 
-              <Button>
+              <Button type="submit" name="intent" value="updateCompany" disabled={navigation.state === "submitting"}>
                 <Save className="h-4 w-4 mr-2" />
-                Save Changes
+                {navigation.state === "submitting" ? "Saving..." : "Save Changes"}
               </Button>
+            </Form>
             </CardContent>
           </Card>
 
@@ -179,6 +270,7 @@ export function Settings(){
                 <Form method="put">
 
                     <input type="hidden" name="token" value={token}/>
+                    <input type="hidden" name="userId" value={userDetails.id} />
 
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -221,9 +313,9 @@ export function Settings(){
                         </div>
                     </div>
 
-                    <Button>
+                    <Button type="submit" name="intent" value="updatePersonal" disabled={navigation.state === "submitting"}>
                         <Save className="h-4 w-4 mr-2" />
-                        Update Personal Info
+                        {navigation.state === "submitting" ? "Updating..." : "Update Personal Info"}
                     </Button>
                 </Form>
             </CardContent>
@@ -362,7 +454,7 @@ export function Settings(){
             </CardContent>
           </Card>
 
-          <Card>
+          {/* <Card>
             <CardHeader>
               <CardTitle>Two-Factor Authentication</CardTitle>
               <CardDescription>Add an extra layer of security to your account</CardDescription>
@@ -407,7 +499,7 @@ export function Settings(){
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </Card> */}
         </TabsContent>
 
         <TabsContent value="integrations">
