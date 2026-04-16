@@ -239,6 +239,7 @@ export function Settings(){
                     name="email" 
                     type="email" 
                     defaultValue="info@techstart.co.za" 
+                    disabled
                   />
                 </div>
               </div>

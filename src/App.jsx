@@ -3,7 +3,7 @@ import './App.css'
 import {Login, Action as action} from './pages/Login'
 import SideNavLayout from './components/SideNavLayout'
 import {Settings, action as actionSettings} from './pages/SME/Settings'
-import Compliance from './pages/SME/Compliance'
+import {Compliance, uploadDocumentAction} from './pages/SME/Compliance'
 import Dashboard from './pages/SME/Dashboard'
 import DiagnosticRoadmap from './pages/SME/DiagnosticRoadmap'
 import LearningHub from './pages/SME/LearningHub'
@@ -41,7 +41,7 @@ function App() {
           <Route path="/sme" element={<SideNavLayout/>}>
             <Route index element={<Dashboard/>}/>
             <Route path='settings' element={<Settings/>} action={actionSettings}/>
-            <Route path='compliance' element={<Compliance/>}/>
+            <Route path='compliance' element={<Compliance/>} action={uploadDocumentAction} />
             <Route path='diagnosticRoadmap' element={<DiagnosticRoadmap/>}/>
             <Route path='learningHub' element={<LearningHub/>}/>
             <Route path='funding' element={<Funding/>}/>

@@ -14,9 +14,61 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Form, useNavigation } from "react-router-dom";
 
 
-export default function Compliance(){
+
+export async function uploadDocumentAction({ request, params }) {
+    const formData = await request.formData()
+    const file = formData.get("pdf")
+    const userID = formData.get("userID")
+    const documentType = formData.get("documentType")
+
+    if (!file || file.size === 0) {
+        return ({ error: "Please select a PDF file" }, { status: 400 })
+    }
+
+    const apiFormData = new FormData()
+    apiFormData.append("pdf", file)
+
+    try {
+        const response = await fetch(
+            `http://localhost:3000/api/users/${userID}/documents`,
+            {
+                method: "POST",
+                body: apiFormData,
+            }
+        )
+
+        const result = await response.json()
+
+        if (!response.ok) {
+            return (
+                { error: result.message || "Upload failed" },
+                { status: response.status }
+            )
+        }
+
+        return json({
+            success: true,
+            message: result.message,
+            document: result.document,
+            documentType,
+        })
+    } catch (error) {
+        return (
+            { error: "Something went wrong while uploading" },
+            { status: 500 }
+        )
+    }
+}
+
+
+export function Compliance(){
+
+  const userID = JSON.parse(localStorage.getItem('user')).id
+  console.log(userID)
+  const navigation = useNavigation()
 
 
     const documents = [
@@ -56,22 +108,10 @@ export default function Compliance(){
             requirement: "Public liability cover",
         },
     ]
+
     const expiringDocs = documents.filter((d) => d.status === "expiring").length;
     const validDocs = documents.filter((d) => d.status === "valid").length;
     const expiredDocs = documents.filter((d) => d.status === "expired").length;
-
-    const esdScorecard = [
-        { category: "Total Procurement Spend", weight: 20, score: 18.5, target: 20 },
-        { category: "Ownership", weight: 25, score: 23.2, target: 25 },
-        { category: "Management Control", weight: 15, score: 12.8, target: 15 },
-        { category: "Skills Development", weight: 20, score: 16.4, target: 20 },
-        { category: "Enterprise Development", weight: 15, score: 14.1, target: 15 },
-        { category: "Socio-Economic Development", weight: 5, score: 4.5, target: 5 },
-    ]
-
-    const totalScore = esdScorecard.reduce((sum, item) => sum + item.score, 0);
-    const totalTarget = esdScorecard.reduce((sum, item) => sum + item.target, 0);
-    const scorePercentage = (totalScore / totalTarget) * 100;
 
 
     const getStatusColor = (status) => {
@@ -88,13 +128,14 @@ export default function Compliance(){
     }
 
     return(
-         <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl mb-2">B-BBEE & Compliance</h1>
-        <p className="text-muted-foreground">
-          Track your B-BBEE score, manage compliance documents, and optimize your ESD contribution
-        </p>
-      </div>
+        <div className="space-y-6 max-w-5xl mx-auto" >
+
+            <div>
+                <h1 className="text-3xl mb-2">B-BBEE & Compliance</h1>
+                <p className="text-muted-foreground">
+                    Track your B-BBEE score, manage compliance documents, and optimize your ESD contribution
+                </p>
+            </div>
 
       {/* Overview */}
       <div className="grid md:grid-cols-4 gap-4">
@@ -131,56 +172,7 @@ export default function Compliance(){
         </TabsList>
 
         <TabsContent value="scorecard">
-          <Card>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle>B-BBEE Scorecard</CardTitle>
-                  <CardDescription>Your current B-BBEE performance across all elements</CardDescription>
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl tabular-nums mb-1">{totalScore.toFixed(1)}</div>
-                  <p className="text-sm text-muted-foreground">Total Points</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {esdScorecard.map((item, i) => (
-                  <div key={i} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span>{item.category}</span>
-                      <span className="text-sm tabular-nums">
-                        {item.score.toFixed(1)} / {item.target}
-                      </span>
-                    </div>
-                    <Progress value={(item.score / item.target) * 100} className="h-2" />
-                  </div>
-                ))}
-
-                <div className="pt-4 border-t">
-                  <div className="flex items-center justify-between mb-2">
-                    <span>Overall Score</span>
-                    <span className="text-lg tabular-nums">
-                      {totalScore.toFixed(1)} / {totalTarget}
-                    </span>
-                  </div>
-                  <Progress value={scorePercentage} className="h-3" />
-                  <div className="flex items-center gap-2 mt-3">
-                    <TrendingUp className="h-4 w-4 text-success-color" />
-                    <span className="text-sm text-success-color">
-                      You're on track for Level 2 B-BBEE rating
-                    </span>
-                  </div>
-                </div>
-
-                <Button className="w-full">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download Detailed Scorecard
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          
         </TabsContent>
 
         <TabsContent value="documents">
@@ -222,19 +214,34 @@ export default function Compliance(){
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(doc.status)}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline">
-                            View
-                          </Button>
-                          {doc.status !== "valid" && (
-                            <Button size="sm">
-                              <Upload className="h-3 w-3 mr-1" />
-                              Upload
+                        <TableCell>
+                          <div className="flex gap-2 items-center">
+                            <Button size="sm" variant="outline" type="button">
+                              View
                             </Button>
-                          )}
-                        </div>
-                      </TableCell>
+
+                            <Form
+                              method="post"
+                              encType="multipart/form-data"
+                              className="flex items-center gap-2"
+                            >
+                            <input type="hidden" name="userID" value={userID} />
+                            <input type="hidden" name="documentType" value={doc.type} />
+
+                              <input
+                                  type="file"
+                                  name="pdf"
+                                  accept="application/pdf"
+                                  className="text-sm"
+                              />
+
+                              <Button size="sm" type="submit" disabled={navigation.state === "submitting"}>
+                                  <Upload className="h-3 w-3 mr-1" />
+                                  {navigation.state === "submitting" ? "Uploading..." : "Upload"}
+                              </Button>
+                          </Form>
+                      </div>
+                  </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
